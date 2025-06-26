@@ -1,0 +1,151 @@
+/* Global Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f6fa; /* Light background */
+}
+
+/* Navbar Styling */
+.navbar {
+    background-color: #0984e3; /* Same navbar color */
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Shadow effect */
+}
+
+.navbar h2 {
+    margin: 0;
+    font-size: 24px; /* Title font size */
+}
+
+.navbar a {
+    color: white; /* Link color */
+    text-decoration: none;
+    margin-left: 20px; /* Spacing between links */
+    font-weight: bold; /* Bold text */
+    transition: 0.3s; /* Smooth transition */
+    padding: 10px 15px; /* Padding for links */
+    border-radius: 5px; /* Rounded corners */
+}
+
+.navbar a:hover {
+    background-color: #74b9ff; /* Hover effect */
+}
+
+/* Content Styling */
+.content {
+    margin: 50px; /* Margin around content */
+    text-align: center; /* Centered text */
+}
+
+.content h1 {
+    font-size: 36px; /* Main heading size */
+    margin-bottom: 20px; /* Space below heading */
+    color: #2d3436; /* Dark color */
+}
+
+.content p {
+    font-size: 18px; /* Paragraph font size */
+    color: #636e72; /* Light gray color */
+}
+
+/* Dashboard Cards */
+.card-container {
+    display: flex; /* Flexbox for card layout */
+    justify-content: center; /* Center cards */
+    flex-wrap: wrap; /* Wrap cards on smaller screens */
+    gap: 20px; /* Space between cards */
+    margin-top: 40px; /* Space above card container */
+}
+
+.card {
+    background-color: white; /* Card background color */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Shadow effect */
+    padding: 20px; /* Padding inside cards */
+    text-align: center; /* Centered text */
+    width: 250px; /* Fixed width for cards */
+    transition: transform 0.3s; /* Smooth transition for hover */
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Slight lift on hover */
+}
+
+.card h3 {
+    margin-bottom: 15px; /* Space below card heading */
+    font-size: 20px; /* Card heading size */
+    color: #0984e3; /* Blue color for headings */
+}
+
+.card a {
+    display: inline-block; /* Inline block for button */
+    margin-top: 10px; /* Space above button */
+    padding: 10px 15px; /* Padding for button */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #0984e3; /* Button background color */
+    color: white; /* Button text color */
+    text-decoration: none; /* No underline */
+    transition: background-color 0.3s; /* Smooth transition */
+}
+
+.card a:hover {
+    background-color: #74b9ff; /* Button hover effect */
+}
+
+/* Dashboard Card Styling */
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 20px;
+}
+
+.dashboard-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 250px;
+    text-align: center;
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Icons inside cards */
+.dashboard-card img {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 15px;
+}
+
+.appointments-section {
+    margin: 40px 0;
+    text-align: left;
+}
+
+#appointmentsTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#appointmentsTable th, #appointmentsTable td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+#appointmentsTable th {
+    background-color: #0984e3;
+    color: white;
+}
