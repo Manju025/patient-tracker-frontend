@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/clerkDashboard.css">
+    <link rel="stylesheet" href="styles/global.css">
+    <title>Clerk Dashboard</title>
+</head>
+<body>
+    <div class="navbar">
+        <h2>Clerk Dashboard</h2>
+        <div>
+            <a href="index.html">Logout</a>
+        </div>
+    </div>
+    <div class="content">
+        <!-- Placeholder for dynamic name -->
+        <h1>Welcome, <span id="clerkName">Clerk Name</span>!</h1>
+        <p>Manage your daily tasks here:</p>
+        <div class="card-container">
+            <div class="card">
+                <h3>Bills</h3>
+                <a href="showBills.html">Show bills</a>
+            </div>
+            <div class="card">
+                <h3>Patient Information</h3>
+                <a href="patientInfo.html">View</a>
+            </div>
+            <div class="card">
+                <h3>Manage Appointments</h3>
+                <a href="manageAppointments.html">View</a>
+            </div>
+            <div class="card">
+                <h3>Feedback & Complaints</h3>
+                <a href="feedbackInfo.html">Manage</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("http://localhost/Patient-Tracking/backend/scripts/getClerkSession.php")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.clerk_name) {
+                        document.getElementById("clerkName").textContent = data.clerk_name;
+                    } else {
+                        window.location.href = "clerkLogin.html"; // Redirect if session not found
+                    }
+                })
+                .catch(error => console.error("Error fetching clerk session:", error));
+        });
+        </script>
+</body>
+</html>

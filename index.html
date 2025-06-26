@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Tracking System - Home</title>
+    <link rel="stylesheet" href="styles/global.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fc;
+            color: #333;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            font-size: 2em;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .role-selection {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 50px auto;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            width: 300px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px, );
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .sos-container {
+            text-align: center;
+            margin: 60px auto;
+        }
+
+        .sos-btn {
+            background: red;
+            color: white;
+            padding: 20px 40px;
+            font-size: 1.5em;
+            border-radius: 60px;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+            box-shadow: 0 8px 15px rgba(255, 0, 0, 0.3);
+            border: none;
+        }
+
+        .bed-booking, .ambulance-section {
+            max-width: 900px;
+            margin: 60px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        .p {
+            text-align: left;
+        }
+
+        .list-unstyled {
+            list-style: outside;
+            text-align: left;
+            padding-left: 25px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>Welcome to the Patient Tracking System</h1>
+        <p>Select your role to proceed:</p>
+    </header>
+
+    <!-- Role Selection -->
+    <main class="role-selection">
+        <div class="card">
+            <h2>Clerk</h2>
+            <button onclick="goToPage('clerkReg.html')">Register as Clerk</button>
+        </div>
+
+        <div class="card">
+            <h2>Doctor</h2>
+            <button onclick="goToPage('doctorReg.html')">Register as Doctor</button>
+        </div>
+
+        <div class="card">
+            <h2>Patient</h2>
+            <button onclick="goToPage('patientReg.html')">Register as Patient</button>
+        </div>
+    </main>
+
+    <div class="sos-container">
+        <p class="d-inline-flex gap-1">
+        <button class="sos-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+           🚨 SOS Emergency
+        </button>
+    </p>
+    <div class="collapse" id="collapseExample">
+    <div class="sos-options" id="sosOptions">
+            <button onclick="goToPage('nearestHospitals.html')">🏥 Nearest Hospitals</button>
+            <button onclick="goToPage('ambulanceBooking.html')">🚑 Book Ambulance</button>
+            <button onclick="goToPage('emergencyContacts.html')">📞 Emergency Contacts</button>
+        </div>
+    </div>
+    </div>
+    
+
+    <!-- Hospital Bed Booking -->
+    <section class="bed-booking">
+        <h2>Hospital Bed Booking</h2>
+        <p class="p">Select the type of bed for admission:</p>
+        <ul class="list-unstyled">
+            <li>🛏️ FOWLER BED</li>
+            <li>🛏️ SEMI FOWLER BED</li>
+            <li>🛏️ ELECTRIC BED</li>
+            <li>🛏️ MANUAL BEDS</li>
+            <li>🛏️ MOTORIZED BED</li>
+            <li>🛏️ RECLINER BED</li>
+            <li>🛏️ AIR MATTRESS</li>
+        </ul>
+        <button onclick="goToPage('bedBooking.html')">Book a Bed</button>
+    </section>
+
+    <!-- Ambulance Section -->
+    <section class="ambulance-section">
+        <h2>🚑 Ambulance Services</h2>
+        <div class="ambulance-buttons">
+            <button onclick="goToPage('ambulanceBooking.html')" class="ambulance-btn">
+                Book an Ambulance
+            </button>
+            <button onclick="goToPage('ambulanceTracking.html')" class="ambulance-btn">
+                Track Ambulance
+            </button>
+        </div>
+    </section>
+
+    <script>
+        function goToPage(page) {
+            window.location.href = page;
+        }
+
+        function toggleSOS() {
+            let options = document.getElementById("sosOptions");
+            
+        }
+    </script>
+
+</body>
+</html>

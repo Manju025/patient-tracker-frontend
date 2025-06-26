@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Login</title>
+    <link rel="stylesheet" href="styles/clerkReg.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-box">
+            <h1>Patient Login</h1>
+            <form id="patientLoginForm" action="/Patient-Tracking/backend/scripts/patientLogin.php" method="POST">
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="register-btn">Login</button>
+            </form>
+            <p>New here? <a href="patientReg.html">Register Now</a></p>
+        </div>
+    </div>
+    <script>
+        document.getElementById("patientLoginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const response = await fetch("http://localhost/Patient-Tracking/backend/scripts/patientLogin.php", {
+                method: "POST",
+                body: formData,
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                alert(result.message);
+                // Redirect to patient dashboard or homepage after successful login
+                window.location.href = "patientDashboard.html"; // Change this to your dashboard or homepage
+            } else {
+                alert("Error: " + result.message);
+            }
+        });
+    </script>
+</body>
+</html>

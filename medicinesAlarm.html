@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Alarm</title>
+    <link rel="stylesheet" href="styles/bootstrap.min.css">
+    <script src="scripts/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            background: white;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h2, h3 {
+            text-align: center;
+            color: #007bff;
+        }
+        .btn-back {
+            background-color: #ffc107;
+            color: black;
+            border: none;
+            width: 100%;
+        }
+        .btn-back:hover {
+            background-color: #e0a800;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Set Medicine Alarm</h2>
+        <form id="medicineForm">
+            <label for="medicineName">Medicine Name:</label>
+            <input type="text" id="medicineName" name="medicine_name" class="form-control" required>
+        
+            <label for="dosage">Dosage:</label>
+            <input type="text" id="dosage" name="dosage" class="form-control" required>
+        
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate" name="start_date" class="form-control" required>
+        
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate" name="end_date" class="form-control" required>
+        
+            <label for="alarmTime">Alarm Time:</label>
+            <input type="time" id="alarmTime" name="alarm_time" class="form-control" required>
+        
+            <label for="phoneNumber">Phone Number:</label>
+            <input type="tel" id="phoneNumber" name="phone_number" class="form-control" required>
+        
+            <label for="patientId">Patient ID:</label>
+            <input type="text" id="patientId" name="patient_id" class="form-control" required>
+
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary">Set Alarm</button>
+                <a href="patientDashboard.html" class="btn btn-back">Back</a>
+            </div>
+        </form>
+
+        <h3 class="mt-5">Your Alarms</h3>
+        <ul id="alarmList" class="list-group"></ul>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("medicineForm").addEventListener("submit", function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                let phoneNumber = document.getElementById("phoneNumber").value.trim();
+                if (!phoneNumber.startsWith("+91")) {
+                    phoneNumber = "+91" + phoneNumber;
+                }
+                formData.set("phone_number", phoneNumber);
+
+                fetch("http://localhost/Patient-Tracking/backend/scripts/saveMedicineAlarm.php", {
+                    method: "POST",
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Medicine alarm set successfully!");
+                        document.getElementById("medicineForm").reset(); // Clear form after submit
+                        loadAlarms();
+                    } else {
+                        alert("Error: " + data.message);
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+            });
+
+            loadAlarms();
+        });
+
+        function loadAlarms() {
+            fetch("http://localhost/Patient-Tracking/backend/scripts/getMedicineAlarms.php")
+            .then(response => response.json())
+            .then(data => {
+                const alarmList = document.getElementById("alarmList");
+                alarmList.innerHTML = "";
+                
+                if (data.alarms.length === 0) {
+                    alarmList.innerHTML = "<li class='list-group-item text-center'>No alarms set.</li>";
+                    return;
+                }
+
+                data.alarms.forEach(alarm => {
+                    let li = document.createElement("li");
+                    li.className = "list-group-item d-flex justify-content-between align-items-center";
+                    li.innerHTML = `<strong>${alarm.medicine_name} (${alarm.dosage})</strong> 
+                        <span>${alarm.alarm_date} at ${alarm.alarm_time}</span> 
+                        <small>Status: ${alarm.status}</small>`;
+                    alarmList.appendChild(li);
+                });
+            })
+            .catch(error => console.error("Error loading alarms:", error));
+        }
+    </script>
+
+</body>
+</html>

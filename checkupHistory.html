@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkup History</title>
+    <link rel="stylesheet" href="styles/patientDashboard.css">
+    <link rel="stylesheet" href="styles/global.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h2>Checkup History</h2>
+        <div>
+            <a href="#" id="downloadReportLink" target="_blank">Download Report</a>
+            <a href="patientDashboard.html">Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="content">
+        <h1>Checkup History</h1>
+        <table id="historyTable">
+            <thead>
+                <tr>
+                    <th>Doctor</th>
+                    <th>Diagnosis</th>
+                    <th>Prescription</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here dynamically -->
+            </tbody>
+        </table>
+    
+        <!-- ✅ Button is here, NOT inside <table> -->
+        
+    </div>
+    
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("http://localhost/Patient-Tracking/backend/scripts/getCheckupHistory.php")
+            .then(response => response.json())
+            .then(data => {
+                console.log("API Response:", data); // 🔍 Check what backend returns
+                if (data.success && data.history.length > 0) {
+                    const tableBody = document.querySelector("#historyTable tbody");
+                    tableBody.innerHTML = "";
+                    data.history.forEach(item => {
+                        const row = `<tr>
+                            <td>${item.doctor_name}</td>
+                            <td>${item.diagnosis}</td>
+                            <td>${item.prescription}</td>
+                            <td>${item.checkup_date}</td>
+                        </tr>`;
+                        tableBody.innerHTML += row;
+                    });
+                } else {
+                    document.querySelector("#historyTable tbody").innerHTML =
+                        "<tr><td colspan='4'>No checkup history found</td></tr>";
+                }
+            })
+            .catch(error => console.error("Fetch error:", error));
+        });
+
+        // Function to trigger report download
+        function downloadReport() {
+            window.location.href = "http://localhost/Patient-Tracking/backend/scripts/generate_report.php";
+        }
+    </script>
+    <button id="downloadReport" onclick="downloadReport()">Download Report</button>
+
+</body>
+</html>

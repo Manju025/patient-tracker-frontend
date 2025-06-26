@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambulance Tracking</title>
+    <link rel="stylesheet" href="styles/ambulanceTracking.css">
+    <script src="scripts/ambulance.js" defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script> <!-- Add your API key -->
+</head>
+<body>
+    <header>
+        <h1>Ambulance Tracking</h1>
+        <p>Track your assigned ambulance in real-time below.</p>
+    </header>
+
+    <main class="tracking-container">
+        <div id="map"></div> <!-- Map container -->
+        <div class="driver-info">
+            <h2>Driver Details</h2>
+            <p><strong>Name:</strong> John Doe</p>
+            <p><strong>Phone:</strong> +91 9876543210</p>
+            <p><strong>Ambulance ID:</strong> AMB123</p>
+            <p><strong>Status:</strong> En route</p>
+        </div>
+    </main>
+
+    <script>
+        function initMap() {
+            // Initial map settings
+            const initialLocation = { lat: 28.7041, lng: 77.1025 }; // Example location (Delhi, India)
+            const map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 14,
+                center: initialLocation
+            });
+
+            // Marker for the ambulance
+            const marker = new google.maps.Marker({
+                position: initialLocation,
+                map: map,
+                title: 'Ambulance Location'
+            });
+
+            // Example: Update marker position dynamically (this simulates GPS updates)
+            setInterval(() => {
+                const newLat = initialLocation.lat + (Math.random() - 0.5) / 1000;
+                const newLng = initialLocation.lng + (Math.random() - 0.5) / 1000;
+                marker.setPosition({ lat: newLat, lng: newLng });
+                map.setCenter({ lat: newLat, lng: newLng });
+            }, 5000); // Updates every 5 seconds
+        }
+
+        // Initialize map on load
+        window.onload = initMap;
+    </script>
+</body>
+</html>

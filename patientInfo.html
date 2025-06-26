@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Information</title>
+    <link rel="stylesheet" href="../frontend/styles/patientInfo.css">
+    <link rel="stylesheet" href="styles/global.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f6fa;
+            color: #2d3436;
+            margin: 0;
+            padding: 0;
+        }
+        
+        button {
+            background-color: #0984e3;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #74b9ff;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .role-selection {
+                flex-direction: column;
+                align-items: center;
+            }
+        
+            .card {
+                width: 80%;
+                margin-bottom: 20px;
+            }
+        
+            .content, .navbar, .dashboard {
+                padding: 15px;
+                font-size: 1em;
+            }
+        }
+        
+        .navbar {
+            background-color: #0984e3;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+            transition: 0.3s;
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+        
+        .navbar a:hover {
+            background-color: #74b9ff;
+        }
+
+        .search-bar {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .search-bar input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .search-bar button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .search-bar button:hover {
+            background-color: #0056b3;
+        }
+        
+        #patient-details {
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 600px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #555;
+        }
+        
+        #patient-history table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        #patient-history th, #patient-history td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        #patient-history th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        
+        #patient-history tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        #patient-history tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        #back-to-dashboard {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h2>Patient Enquiry</h2>
+        <div>
+            <a href="index.html">Home</a>
+            <!-- <a id="dashboard-link" href="#">Dashboard</a> -->
+        </div>
+    </div>
+    <div class="container">
+        <header>
+            <h1>Patient Information</h1>
+        </header>
+        <main>
+            <div class="search-bar">
+                <input type="text" id="patient-id-input" placeholder="Enter Patient ID">
+                <button id="search-button">Search</button>
+            </div>
+            <div id="patient-details" class="details-card" style="display: none;"></div>
+            <div id="patient-history">
+                <h2>History of Treatments and Checkups</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Diagnosis</th>
+                            <th>Treatment</th>
+                            <th>Doctor</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table"></tbody>
+                </table>
+            </div>
+            <button id="back-to-dashboard">Back to Dashboard</button>
+        </main>
+    </div>
+
+    <script>
+        
+        document.getElementById("search-button").addEventListener("click", function() {
+            const patientId = document.getElementById("patient-id-input").value;
+
+            if (patientId) {
+                fetch(`http://localhost/Patient-Tracking/backend/scripts/getPatientInfo.php?id=${patientId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const patient = data.patient;
+                            const history = data.history;
+
+                            // Populate patient details
+                            document.getElementById("patient-details").innerHTML = `
+                                <h2>${patient.name}</h2>
+                                <p><strong>Email:</strong> ${patient.email}</p>
+                                <p><strong>Phone:</strong> ${patient.phone}</p>
+                                <p><strong>Date of Birth:</strong> ${patient.dob}</p>
+                                <p><strong>Registered On:</strong> ${new Date(patient.created_at).toLocaleDateString()}</p>
+                            `;
+                            document.getElementById("patient-details").style.display = "block";
+
+                            // Populate patient history
+                            const historyTable = document.getElementById("history-table");
+                            historyTable.innerHTML = ''; // Clear previous content
+                            if (history.length > 0) {
+                                history.forEach(record => {
+                                    const row = document.createElement("tr");
+                                    row.innerHTML = `
+                                        <td>${new Date(record.date_of_checkup).toLocaleDateString()}</td>
+                                        <td>${record.diagnosis}</td>
+                                        <td>${record.treatment}</td>
+                                        <td>${record.doctor_name}</td>
+                                        <td>${record.notes}</td>
+                                    `;
+                                    historyTable.appendChild(row);
+                                });
+                            } else {
+                                historyTable.innerHTML = `<tr><td colspan="5">No history found.</td></tr>`;
+                            }
+                        } else {
+                            document.getElementById("patient-details").innerHTML = `<p>${data.message}</p>`;
+                            document.getElementById("patient-details").style.display = "block";
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error fetching patient data:", error);
+                        document.getElementById("patient-details").innerHTML = `<p>Failed to load patient information. Please try again later.</p>`;
+                        document.getElementById("patient-details").style.display = "block";
+                    });
+            } else {
+                document.getElementById("patient-details").innerHTML = `<p>Please enter a valid Patient ID.</p>`;
+                document.getElementById("patient-details").style.display = "block";
+            }
+        });
+
+        fetch("http://localhost/Patient-Tracking/backend/scripts/dashboardRedirect.php")
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById("dashboard-link").href = data.dashboard;
+            } else {
+                alert("Session expired. Please log in again.");
+                window.location.href = "index.html";
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching dashboard link:", error);
+        });
+    </script>
+</body>
+</html>

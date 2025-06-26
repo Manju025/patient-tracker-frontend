@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nearest Hospitals</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuI0W6iAwNjFWyvvJeluRO3tjr32UbdI0&libraries=places&callback=initMap"></script>
+
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        h1 {
+            color: #333;
+        }
+        
+        #map {
+            width: 100%;
+            height: 500px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        #hospital-results {
+            max-width: 800px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+        
+        .hospital-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .hospital-card a {
+            text-decoration: none;
+            color: blue;
+        }
+        
+        .theme-toggle {
+            margin: 10px auto;
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .dark-mode {
+            background-color: #222;
+            color: #f4f4f4;
+        }
+        
+        .dark-mode .hospital-card {
+            background: #333;
+            color: white;
+            box-shadow: 2px 2px 10px rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Find Nearest Hospitals</h1>
+    <p>Allow location access to get nearby hospitals.</p>
+    <div id="map"></div>
+    <div id="hospital-results">
+        <p>Loading hospitals...</p>
+    </div>
+    
+    <script src="scripts/nearest_hospitals.js"></script>
+    <script>
+        document.getElementById("theme-toggle").addEventListener("click", () => {
+            document.body.classList.toggle("dark-mode");
+            document.getElementById("theme-toggle").textContent =
+                document.body.classList.contains("dark-mode") ? "☀️ Light Mode" : "🌙 Dark Mode";
+        });
+    </script>
+</body>
+</html>

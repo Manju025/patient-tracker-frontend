@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Appointments</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/manageAppointments.css">
+    <style>
+        /* Inline styling if manageAppointments.css doesn't exist yet */
+        .appointment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .appointment-table th,
+        .appointment-table td {
+            text-align: center;
+            padding: 15px;
+            border: 1px solid #ddd;
+        }
+
+        .appointment-table th {
+            background-color: #0984e3;
+            color: white;
+            font-size: 16px;
+        }
+
+        .appointment-table td {
+            font-size: 14px;
+            color: #2d3436;
+        }
+
+        .search-bar input {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+            margin: 20px auto;
+            display: block;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .add-appointment button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #0984e3;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .add-appointment button:hover {
+            background-color: #74b9ff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <h2>Patient Tracking System</h2>
+        <div>
+            <a href="index.html">Home</a>
+            <!-- <a href="clerkDashboard.html">Dashboard</a> -->
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <h1>Manage Appointments</h1>
+
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search appointments...">
+        </div>
+
+        <!-- Add Appointment Button -->
+        <div class="add-appointment">
+            <button onclick="goToPage('appointments.html')">Add New Appointment</button>
+        </div>
+
+        <!-- Appointment Table -->
+        <table class="appointment-table" id="appointmentsTable">
+            <thead>
+                <tr>
+                    <th>Sl.No</th>
+                    <th>ID</th>
+                    <th>Patient Name</th>
+                    <th>Doctor</th>
+                    <th>Appointment Date</th>
+                    <th>Appointment Time</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamic rows will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function goToPage(page) {
+            window.location.href = page;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('getAppointments.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        populateTable(data.appointments);
+                    } else {
+                        console.error("Error in response: ", data.message);
+                    }
+                })
+                .catch(error => console.error("Error during fetch: ", error));
+
+            function populateTable(data) {
+                const tableBody = document.getElementById('appointmentsTable').querySelector('tbody');
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                data.forEach((appointment, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${appointment.id}</td>
+                        <td>${appointment.patient_name}</td>
+                        <td>${appointment.doctor}</td>
+                        <td>${appointment.date}</td>
+                        <td>${appointment.time}</td>
+                        <td>
+                            <button onclick="editAppointment(${appointment.id})">Edit</button>
+                            <button onclick="deleteAppointment(${appointment.id})">Delete</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            document.getElementById('searchInput').addEventListener('input', function () {
+                const searchValue = this.value.toLowerCase();
+                const tableBody = document.getElementById('appointmentsTable').querySelector('tbody');
+                const rows = Array.from(tableBody.children);
+                const filteredRows = rows.filter(row =>
+                    Array.from(row.children).some(cell => cell.textContent.toLowerCase().includes(searchValue))
+                );
+
+                tableBody.innerHTML = '';
+                filteredRows.forEach(row => tableBody.appendChild(row));
+            });
+        });
+
+        function editAppointment(id) {
+            const patient_name = prompt("Enter new patient name:");
+            const doctor = prompt("Enter new doctor:");
+            const date = prompt("Enter new date (YYYY-MM-DD):");
+            const time = prompt("Enter new time (HH:MM):");
+
+            if (patient_name && doctor && date && time) {
+                fetch('getAppointments.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'update', id, patient_name, doctor, date, time })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Appointment updated.');
+                        location.reload();
+                    } else {
+                        alert('Failed to update appointment: ' + data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                alert('All fields are required.');
+            }
+        }
+
+        function deleteAppointment(id) {
+            if (confirm('Are you sure you want to delete appointment ID: ' + id + '?')) {
+                fetch('getAppointments.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'delete', id })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Appointment deleted.');
+                        location.reload();
+                    } else {
+                        alert('Failed to delete appointment: ' + data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+    </script>
+</body>
+</html>

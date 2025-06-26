@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard</title>
+    <link rel="stylesheet" href="styles/patientDashboard.css">
+    <link rel="stylesheet" href="styles/bootstrap.min.css">
+    <script src="scripts/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <h2>Patient Dashboard</h2>
+        <div>
+            <a href="../backend/scripts/generate_report.php?id=1" target="_blank">Download Report</a>
+            <a href="patientLogin.html">Logout</a>
+            <a href="index.html">Home</a>
+        </div>
+    </nav>
+
+    <!-- Medicine Alarm Modal -->
+    <div class="modal fade" id="medicineAlarmModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="medicineAlarmLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="medicineAlarmLabel">Set Medicine Alarm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="medicineForm">
+                        <label for="medicineName">Medicine Name:</label>
+                        <input type="text" id="medicineName" name="medicine_name" placeholder="Example: Paracetamol" class="form-control" required>
+
+                        <label for="dosage">Dosage:</label>
+                        <input type="text" id="dosage" name="dosage" placeholder="1 Capsole" class="form-control" required>
+
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" id="startDate" name="start_date" class="form-control" required>
+
+                        <label for="endDate">End Date:</label>
+                        <input type="date" id="endDate" name="end_date" class="form-control" required>
+
+                        <label for="alarmTime">Alarm Time:</label>
+                        <input type="time" id="alarmTime" name="alarm_time" class="form-control" required>
+
+                        <label for="phoneNumber">Phone Number:</label>
+                        <label for="">Note: Please dont't add "+91"</label>
+                        <input type="tel" id="phoneNumber" name="phone_number" placeholder="Example: 9876543210" class="form-control" required>
+
+                        <label for="patientId">Patient ID:</label>
+                        <input type="text" id="patientId" name="patient_id" class="form-control" required>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Set Alarm</button>
+                        </div>
+                    </form>
+
+                    <h3 class="mt-3">Your Alarms</h3>
+                    <ul id="alarmList" class="list-group"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <h1>Welcome, [Patient Name]!</h1>
+        <h5>Patient ID: <span id="displayPatientId"></span></h5>
+        <p>Select an action below:</p>
+
+        <div class="card-container">
+            <div class="card">
+                <h3>Checkup History</h3>
+                <a href="patientCheckupHistory.html">View History</a>
+            </div>
+
+            <div class="card">
+                <h3>Book Appointment</h3>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                    Book Now!
+                </button>
+            </div>
+
+            <div class="card">
+                <h3>Medicine Alarm</h3>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#medicineAlarmModal">
+                    Set Alarm
+                </button>
+            </div>
+            
+
+            <div class="card">
+                <h3>Contact Doctor</h3>
+                <a href="contactDoctor.html">Message</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("http://localhost/Patient-Tracking/backend/scripts/getPatientSession.php")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.patient_name) {
+                        document.querySelector("h1").innerHTML = `Welcome, ${data.patient_name}!`;
+                        document.getElementById("displayPatientId").textContent = data.patient_id;
+                    } else {
+                        window.location.href = "patientLogin.html"; // Redirect if not logged in
+                    }
+                })
+                .catch(error => console.error("Error fetching patient session:", error));
+
+            loadAlarms();
+        });
+        
+
+        // Handle Medicine Alarm Form Submission
+        document.getElementById("medicineForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            let phoneNumber = document.getElementById("phoneNumber").value.trim();
+            if (!phoneNumber.startsWith("+91")) {
+                phoneNumber = "+91" + phoneNumber;
+            }
+            formData.set("phone_number", phoneNumber);
+
+            fetch("http://localhost/Patient-Tracking/backend/scripts/saveMedicineAlarm.php", {
+                method: "POST",
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Medicine alarm set successfully!");
+                    document.getElementById("medicineForm").reset(); // Clear form after submit
+                    loadAlarms();
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+
+        function loadAlarms() {
+            fetch("http://localhost/Patient-Tracking/backend/scripts/getMedicineAlarms.php")
+            .then(response => response.json())
+            .then(data => {
+                const alarmList = document.getElementById("alarmList");
+                alarmList.innerHTML = "";
+
+                if (!data.alarms || data.alarms.length === 0) {
+                    alarmList.innerHTML = "<li class='list-group-item text-center'>No alarms set.</li>";
+                    return;
+                }
+
+                data.alarms.forEach(alarm => {
+                    let li = document.createElement("li");
+                    li.className = "list-group-item d-flex justify-content-between align-items-center";
+                    li.innerHTML = `<strong>${alarm.medicine_name} (${alarm.dosage})</strong> 
+                        <span>${alarm.alarm_time}</span> 
+                        <small>Status: ${alarm.status}</small>`;
+                    alarmList.appendChild(li);
+                });
+            })
+            .catch(error => console.error("Error loading alarms:", error));
+        }
+    </script>
+</body>
+</html>

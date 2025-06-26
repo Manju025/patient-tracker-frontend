@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Appointments</title>
+    <link rel="stylesheet" href="styles/appointments.css">
+</head>
+<body>
+    <div class="navbar">
+        <h2>Manage Appointments</h2>
+        <div>
+            <a href="manageAppointments.html">Manage Data</a>
+        </div>
+    </div>
+    <div class="content">
+        <h1>Appointments</h1>
+        <table class="appointments-table" id="appointmentsTable">
+            <thead>
+                <tr>
+                    <th>Patient Name</th>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Appointment rows will be dynamically loaded here -->
+            </tbody>
+        </table>
+        <button onclick="openAddAppointmentModal()">Add New Appointment</button>
+    </div>
+
+    <!-- Modal for Adding/Updating Appointment -->
+    <div id="appointmentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAppointmentModal()">&times;</span>
+            <h2 id="modalTitle">Add Appointment</h2>
+            <form id="appointmentForm" action="/Patient-Tracking/backend/scripts/saveAppointments.php" method="POST">
+                <label for="patientName">Patient Name:</label>
+                <input type="text" id="patientName" name="patientName" required>
+                
+                <label for="doctor">Doctor:</label>
+                <input type="text" id="doctor" name="doctor" required>
+            
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" required>
+            
+                <label for="time">Time:</label>
+                <input type="time" id="time" name="time" required>
+            
+                <button type="submit">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('http://localhost/Patient-Tracking/backend/scripts/appointments.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        populateTable(data.appointments);
+                    } else {
+                        console.error("Error in response: ", data.message);
+                    }
+                })
+                .catch(error => console.error("Error during fetch: ", error));
+
+            function populateTable(appointments) {
+                const tableBody = document.getElementById('appointmentsTable').querySelector('tbody');
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                appointments.forEach(appointment => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${appointment.patient_name}</td>
+                        <td>${appointment.doctor}</td>
+                        <td>${appointment.date}</td>
+                        <td>${appointment.time}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        });
+
+        document.getElementById("appointmentForm").addEventListener("submit", function (e) {
+            e.preventDefault(); // Prevent form submission from reloading the page
+
+            const formData = new FormData(e.target);
+
+            fetch("http://localhost/Patient-Tracking/backend/scripts/saveAppointments.php", {
+                method: "POST",
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Appointment saved successfully!");
+                    location.reload(); // Reload the page to update the table
+                } else {
+                    alert("Error saving appointment: " + data.message);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+
+        function openAddAppointmentModal() {
+            document.getElementById("modalTitle").innerText = "Add Appointment";
+            document.getElementById("appointmentForm").reset();
+            document.getElementById("appointmentModal").style.display = "block";
+        }
+
+        function openEditAppointmentModal(id) {
+            // Fetch appointment details and populate the form (to be implemented)
+            document.getElementById("modalTitle").innerText = "Edit Appointment";
+            document.getElementById("appointmentModal").style.display = "block";
+        }
+
+        function closeAppointmentModal() {
+            document.getElementById("appointmentModal").style.display = "none";
+        }
+
+        function deleteAppointment(id) {
+            if (confirm('Are you sure you want to delete this appointment?')) {
+                fetch('http://localhost/Patient-Tracking/backend/scripts/appointments.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'delete', id })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Appointment deleted.');
+                        location.reload();
+                    } else {
+                        alert('Failed to delete appointment: ' + data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+    </script>
+</body>
+</html>
